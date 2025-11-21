@@ -2,6 +2,7 @@ import streamlit as st
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime, date
+from collections import Counter
 
 st.set_page_config(
     page_title="文化祭ポテト会計",
@@ -259,4 +260,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
