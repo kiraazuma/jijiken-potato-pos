@@ -2,7 +2,6 @@ import streamlit as st
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime, date
-from collections import Counter
 
 st.set_page_config(
     page_title="文化祭ポテト会計",
@@ -10,21 +9,28 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ===== 設定エリア =====
+# ===== 基本設定 =====
 BASE_PRICE = 300  # 通常価格
-DISCOUNT_PASSWORD = "potato-secret"  # 割引用パスワード（自分で変える）
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
-SPREADSHEET_ID = "1WIUZf4WAwwHPdxy5T1qOIppyN0SaufyDrieCruDYBcM"  # URLから取ったやつ
 
-# ===== Google Sheets 接続 =====
+# ===== Streamlit Secrets から設定を読み込む =====
+SPREADSHEET_ID = st.secrets["SPREADSHEET_ID"]
+DISCOUNT_PASSWORD = st.secrets["DISCOUNT_PASSWORD"]
+SERVICE_ACCOUNT_INFO = st.secrets["google_service_account"]
+
+
 @st.cache_resource
 def get_gsheet_client():
-    creds = Credentials.from_service_account_file(
-        "school-fes-pos-67c1a56ec9c3.json",
+    """
+    Google Sheets クライアント（Cloud 専用）
+    """
+    creds = Credentials.from_service_account_info(
+        SERVICE_ACCOUNT_INFO,
         scopes=SCOPES
     )
     client = gspread.authorize(creds)
     return client
+
 
 def get_today_worksheet():
     client = get_gsheet_client()
