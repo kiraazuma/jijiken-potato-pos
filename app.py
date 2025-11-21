@@ -273,32 +273,12 @@ def main():
         else:
             st.write("カゴは空です。")
 
-    # 会計操作
-    st.subheader("③ 会計操作")
-
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        if st.button("カゴをリセット", key="btn_reset"):
-            st.session_state.basket = []
-            st.info("カゴを空にしました。")
-
-    with col2:
-        if st.button("会計を確定して保存", key="btn_confirm"):
-          if st.session_state.basket:
-            save_transaction(st.session_state.basket)
-            st.session_state.basket = []
-  # ← リストを空にする公式手法
-        else:
-          st.warning("カゴが空です。")
-
-    with col3:
-        if st.button("直前の会計を取り消す", key="btn_cancel"):
-            cancel_last_transaction()
+   
 
 
 if __name__ == "__main__":
     main()
+
 
 
 
