@@ -12,6 +12,7 @@ st.set_page_config(
 
 # ===== 基本設定 =====
 BASE_PRICE = 300  # 通常価格
+SEMINAR_PRICE = 200 # 講演会価格
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
 # ===== Streamlit Secrets から設定を読み込む =====
@@ -187,13 +188,18 @@ def main():
     st.subheader("② ポテトを追加")
 
     # 上段：通常価格 & 期間中値下げ価格
-    col_base, col_sale = st.columns(2)
+    col_base,col_seminar, col_sale = st.columns(3)
 
     # 通常価格ボタン（300円）
     with col_base:
         st.caption("通常価格")
         if st.button(f"ポテト {BASE_PRICE}円 をカゴに追加", key="btn_base"):
             st.session_state.basket.append(BASE_PRICE)
+
+    with col_seminar:
+        st.caption("講演会価格")
+        if st.button(f"ポテト {SEMINAR_PRICE}円 をカゴに追加", key="btn_semi"):
+            st.session_state.basket.append(SEMINAR_PRICE)
 
     # 期間中値下げ価格ボタン
     with col_sale:
@@ -278,6 +284,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
