@@ -162,23 +162,9 @@ def main():
     # セッション状態の初期化（カゴ）
     if "basket" not in st.session_state:
         st.session_state.basket = []
-
-    # サイドバーに今日の売上サマリ
-    st.sidebar.header("本日の売上")
-    count, amount = get_today_stats()
-    st.sidebar.metric("売上個数", f"{count} 個")
-    st.sidebar.metric("売上金額", f"{amount} 円")
-
+    sidebar_today = st.sidebar.container()
     st.sidebar.markdown("---")
-
-    # 直近N日間の合計（ここでは5日）
-    c3, a3, start, end = get_last_n_days_stats(5)
-    st.sidebar.header("期間中合計")
-    st.sidebar.metric("合計個数", f"{c3} 個")
-    st.sidebar.metric("合計金額", f"{a3} 円")
-    if start and end:
-        st.sidebar.caption(f"期間: {start} 〜 {end}")
-
+    sidebar_period = st.sidebar.container()
     # 👇 カゴ表示エリアの「場所」だけ先に確保しておく
     basket_container = st.container()
 
@@ -263,6 +249,23 @@ def main():
             st.info("直前の会計を取り消しました。")
 
     # =====================
+    # サイドバーの売上表示（最後に描画）
+    # =====================
+    with sidebar_today:
+        st.header("本日の売上")
+        count, amount = get_today_stats()
+        st.metric("売上個数", f"{count} 個")
+        st.metric("売上金額", f"{amount} 円")
+
+    with sidebar_period:
+        st.header("期間中合計")
+        c3, a3, start, end = get_last_n_days_stats(5)
+        st.metric("合計個数", f"{c3} 個")
+        st.metric("合計金額", f"{a3} 円")
+        if start and end:
+            st.caption(f"期間: {start} 〜 {end}")
+
+    # =====================
     # ① カゴの中身（最後に描画）
     # =====================
     with basket_container:
@@ -284,6 +287,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
