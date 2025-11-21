@@ -14,9 +14,9 @@ BASE_PRICE = 300  # 通常価格
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
 # ===== Streamlit Secrets から設定を読み込む =====
-SPREADSHEET_ID = st.secrets["SPREADSHEET_ID"]
-DISCOUNT_PASSWORD = st.secrets["DISCOUNT_PASSWORD"]
 SERVICE_ACCOUNT_INFO = st.secrets["google_service_account"]
+SPREADSHEET_ID = SERVICE_ACCOUNT_INFO["SPREADSHEET_ID"]
+DISCOUNT_PASSWORD = SERVICE_ACCOUNT_INFO["DISCOUNT_PASSWORD"]
 
 
 @st.cache_resource
@@ -259,3 +259,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
