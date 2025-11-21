@@ -236,7 +236,7 @@ def main():
     # =====================
     # ③ 会計操作
     # =====================
-        st.subheader("③ 会計操作")
+    st.subheader("③ 会計操作")
 
     col1, col2, col3 = st.columns(3)
 
@@ -284,6 +284,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
