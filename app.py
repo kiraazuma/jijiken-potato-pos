@@ -230,19 +230,19 @@ def main():
     # =====================
     # ③ 会計操作
     # =====================
-    st.subheader("③ 会計操作")
+        st.subheader("③ 会計操作")
 
     col1, col2, col3 = st.columns(3)
 
     # カゴをリセット
     with col1:
-        if st.button("カゴをリセット", key="btn_reset"):
+        if st.button("カゴをリセット", key="btn_reset_main"):
             st.session_state.basket = []
             st.info("カゴを空にしました。")
 
     # 会計を確定して保存
     with col2:
-        if st.button("会計を確定して保存", key="btn_confirm"):
+        if st.button("会計を確定して保存", key="btn_confirm_main"):
             if st.session_state.basket:
                 save_transaction(st.session_state.basket)
                 st.session_state.basket = []  # 会計後にカゴを空にする
@@ -252,7 +252,7 @@ def main():
 
     # 直前の会計を取り消す
     with col3:
-        if st.button("直前の会計を取り消す", key="btn_cancel"):
+        if st.button("直前の会計を取り消す", key="btn_cancel_main"):
             cancel_last_transaction()
             st.info("直前の会計を取り消しました。")
 
@@ -299,6 +299,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
