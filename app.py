@@ -170,7 +170,7 @@ def main():
 
     st.sidebar.markdown("---")
 
-    # 直近3日間の合計
+    # 直近N日間の合計（ここでは5日）
     c3, a3, start, end = get_last_n_days_stats(5)
     st.sidebar.header("期間中合計")
     st.sidebar.metric("合計個数", f"{c3} 個")
@@ -178,23 +178,15 @@ def main():
     if start and end:
         st.sidebar.caption(f"期間: {start} 〜 {end}")
 
-    # カゴ表示
-    st.subheader("① カゴの中身")
+    # 👇 カゴ表示エリアの「場所」だけ先に確保しておく
+    basket_container = st.container()
 
-    if st.session_state.basket:
-        counter = Counter(st.session_state.basket)
-        lines = []
-        for price, cnt in sorted(counter.items()):
-            lines.append(f"{price}円 × {cnt}個")
-        st.write(" / ".join(lines))
-        st.write(f"合計個数：**{len(st.session_state.basket)} 個**")
-        st.write(f"合計金額：**{sum(st.session_state.basket)} 円**")
-    else:
-        st.write("カゴは空です。")
-
-    # ポテト追加エリア
+    # =====================
+    # ② ポテトを追加
+    # =====================
     st.subheader("② ポテトを追加")
- # 上段：通常価格 & 期間中値下げ価格
+
+    # 上段：通常価格 & 期間中値下げ価格
     col_base, col_sale = st.columns(2)
 
     # 通常価格ボタン（300円）
@@ -203,21 +195,22 @@ def main():
         if st.button(f"ポテト {BASE_PRICE}円 をカゴに追加", key="btn_base"):
             st.session_state.basket.append(BASE_PRICE)
 
-    # ★ 期間中値下げ価格ボタン
+    # 期間中値下げ価格ボタン
     with col_sale:
         st.caption("期間中の値下げ価格")
         sale_price = st.number_input(
             "値下げ後の価格（円）",
             min_value=0,
             max_value=10000,
-            value=250,      # デフォルトの値下げ価格（好きに変えてOK）
+            value=250,      # デフォルトの値下げ価格
             step=10,
-            key="sale_price",  # セッションに保存される
+            key="sale_price",
         )
         if st.button("ポテト（値下げ価格）をカゴに追加", key="btn_sale"):
-            st.session_state.basket.append(int(st.session_state.sale_price))
+            # sale_price は number_input の戻り値をそのまま使う
+            st.session_state.basket.append(int(sale_price))
 
-    # 下段：特別な割引（パスワード制）はそのまま残す
+    # 下段：特別な割引（パスワード制）
     with st.expander("特別な割引で追加（要パスワード）"):
         pwd = st.text_input("パスワード", type="password", key="pwd_special")
         if pwd == DISCOUNT_PASSWORD:
@@ -232,7 +225,53 @@ def main():
             if st.button("特別割引のポテトをカゴに追加", key="btn_special"):
                 st.session_state.basket.append(int(discount_price))
         elif pwd != "":
-            st.error("パスワードが違います。")    
+            st.error("パスワードが違います。")
+
+    # =====================
+    # ③ 会計操作
+    # =====================
+    st.subheader("③ 会計操作")
+
+    col1, col2, col3 = st.columns(3)
+
+    # カゴをリセット
+    with col1:
+        if st.button("カゴをリセット", key="btn_reset"):
+            st.session_state.basket = []
+            st.info("カゴを空にしました。")
+
+    # 会計を確定して保存
+    with col2:
+        if st.button("会計を確定して保存", key="btn_confirm"):
+            if st.session_state.basket:
+                save_transaction(st.session_state.basket)
+                st.session_state.basket = []  # 会計後にカゴを空にする
+                st.success("会計を保存しました。")
+            else:
+                st.warning("カゴが空です。")
+
+    # 直前の会計を取り消す
+    with col3:
+        if st.button("直前の会計を取り消す", key="btn_cancel"):
+            cancel_last_transaction()
+            st.info("直前の会計を取り消しました。")
+
+    # =====================
+    # ① カゴの中身（最後に描画）
+    # =====================
+    with basket_container:
+        st.subheader("① カゴの中身")
+
+        if st.session_state.basket:
+            counter = Counter(st.session_state.basket)
+            lines = []
+            for price, cnt in sorted(counter.items()):
+                lines.append(f"{price}円 × {cnt}個")
+            st.write(" / ".join(lines))
+            st.write(f"合計個数：**{len(st.session_state.basket)} 個**")
+            st.write(f"合計金額：**{sum(st.session_state.basket)} 円**")
+        else:
+            st.write("カゴは空です。")
 
     # 会計操作
     st.subheader("③ 会計操作")
@@ -260,5 +299,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
