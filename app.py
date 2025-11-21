@@ -1,7 +1,7 @@
 import streamlit as st
 import gspread
 from google.oauth2.service_account import Credentials
-from datetime import datetime, date
+from datetime import datetime, date, timezone, timedelta
 from collections import Counter
 
 st.set_page_config(
@@ -9,6 +9,16 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+JST = timezone(timedelta(hours=9))
+
+def now_jst():
+    """JST の現在日時を返す"""
+    return datetime.now(JST)
+
+def today_jst():
+    """JST の「今日の日付」を返す"""
+    return now_jst().date()
 
 # ===== 基本設定 =====
 BASE_PRICE = 300  # 通常価格
@@ -37,7 +47,8 @@ def get_gsheet_client():
 def get_today_worksheet():
     client = get_gsheet_client()
     sh = client.open_by_key(SPREADSHEET_ID)
-    sheet_name = date.today().isoformat()  # "2025-11-21" みたいな形式
+    sheet_name = today_jst().isoformat()
+  # "2025-11-21" みたいな形式
 
     try:
         ws = sh.worksheet(sheet_name)
@@ -137,10 +148,9 @@ def save_transaction(basket):
 
     ws = get_today_worksheet()
 
-    now = datetime.now()
+    now = now_jst()
     ts = now.strftime("%H:%M:%S")
     d = now.date().isoformat()
-
     count = len(basket)
     amount = sum(basket)
 
@@ -287,6 +297,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
